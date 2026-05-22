@@ -90,3 +90,27 @@ def split_nodes_link(old_nodes):
             else:
                 new_nodes.append(TextNode(matches[0][0], TextType.LINK, matches[0][1]))
     return new_nodes
+
+
+def text_to_textnodes(text):
+    delimiters = {
+        "bold": "**",
+        "italic": "_",
+        "code": "`",
+    }
+
+    nodes = [TextNode(text, TextType.TEXT)]
+
+    for type in TextType:
+        old_nodes = nodes.copy()
+        if type.value == "plain":
+            continue
+        elif type.value == "image":
+            nodes = split_nodes_image(old_nodes)
+        elif type.value == "link":
+            nodes = split_nodes_link(old_nodes)
+        else:
+            delimiter = delimiters[type.value]
+            nodes = split_nodes_delimiter(old_nodes, delimiter, type)
+    return nodes
+
