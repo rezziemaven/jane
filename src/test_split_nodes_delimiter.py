@@ -13,12 +13,12 @@ class TestSplitNodesDelimiter(unittest.TestCase):
         )
         new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
         self.assertListEqual(
-            new_nodes,
             [
                 TextNode("This is text with a ", TextType.TEXT),
                 TextNode("bolded phrase", TextType.BOLD),
                 TextNode(" in the middle.", TextType.TEXT),
             ],
+            new_nodes,
         )
 
     def test_code(self):
@@ -26,12 +26,12 @@ class TestSplitNodesDelimiter(unittest.TestCase):
         node = TextNode("This is text with a `code block` word.", TextType.TEXT)
         new_nodes = split_nodes_delimiter([node], "`", TextType.CODE)
         self.assertListEqual(
-            new_nodes,
             [
                 TextNode("This is text with a ", TextType.TEXT),
                 TextNode("code block", TextType.CODE),
                 TextNode(" word.", TextType.TEXT),
             ],
+            new_nodes,
         )
 
     def test_italic(self):
@@ -39,12 +39,12 @@ class TestSplitNodesDelimiter(unittest.TestCase):
         node = TextNode("This is text with _emphasis_ for impact!", TextType.TEXT)
         new_nodes = split_nodes_delimiter([node], "_", TextType.ITALIC)
         self.assertListEqual(
-            new_nodes,
             [
                 TextNode("This is text with ", TextType.TEXT),
                 TextNode("emphasis", TextType.ITALIC),
                 TextNode(" for impact!", TextType.TEXT),
             ],
+            new_nodes,
         )
 
     def test_multiple(self):
@@ -56,12 +56,12 @@ class TestSplitNodesDelimiter(unittest.TestCase):
         )
         new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
         self.assertListEqual(
-            new_nodes,
             [
                 TextNode("I like", TextType.BOLD),
                 TextNode(" bolding my text at the beginning ", TextType.TEXT),
                 TextNode("and the end!", TextType.BOLD),
             ],
+            new_nodes,
         )
 
     def test_not_split(self):
@@ -70,12 +70,33 @@ class TestSplitNodesDelimiter(unittest.TestCase):
         node2 = TextNode("_I should be split!_ I like code.", TextType.TEXT)
         new_nodes = split_nodes_delimiter([node1, node2], "_", TextType.ITALIC)
         self.assertListEqual(
-            new_nodes,
             [
                 TextNode("I'm just a link", TextType.LINK, "https://google.com"),
                 TextNode("I should be split!", TextType.ITALIC),
                 TextNode(" I like code.", TextType.TEXT),
             ],
+            new_nodes,
+        )
+
+    def test_split_ending_punctuation_marks(self):
+        """Should split ending punctuation marks as text"""
+        node = TextNode("Hello **Jane**!", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
+        self.assertListEqual(
+            [
+                TextNode("Hello ", TextType.TEXT),
+                TextNode("Jane", TextType.BOLD),
+                TextNode("!", TextType.TEXT),
+            ],
+            new_nodes,
+        )
+
+    def test_no_delimiter(self):
+        """Should leave text whole if no delimiter was found"""
+        node = TextNode("This text should stay the same.", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
+        self.assertListEqual(
+            [TextNode("This text should stay the same.", TextType.TEXT)], new_nodes
         )
 
     def test_missing_matching_delimiter(self):
