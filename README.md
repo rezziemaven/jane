@@ -4,6 +4,8 @@ Beautifully simple static site generator
 
 This generator currently generates dummy Tolkien fan blog content. Feel free to replace and add your own content in the `content/` folder, `template.html`, and source CSS and images in the `static/` folder.
 
+Preview it here: [Jane Static Site Generator](https://rezziemaven.github.io/jane/)
+
 ## Usage
 
 1. Clone this repository to your computer.
