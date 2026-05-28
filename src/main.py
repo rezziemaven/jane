@@ -2,11 +2,14 @@ import os
 import shutil
 
 from textnode import TextNode, TextType
+from markdown_parser import markdown_to_html_node, extract_title
+from pathlib import Path
 
 
 def main():
     copy_contents("./static", "./public")
 
+    template_path = "./template.html"
 def copy_contents(src, dst):
     # check that each path exists
     if not os.path.exists(src):
@@ -37,5 +40,28 @@ def copy_contents(src, dst):
     copy_deep(src, dst)
     print("✅ Copy complete.")
 
+
+def generate_page(from_path, template_path, dest_path):
+    print(f"⚙️ Generating page {dest_path} from {from_path} using {template_path}...")
+
+    with open(from_path) as f:
+        markdown = f.read()
+
+    with open(template_path) as f:
+        template = f.read()
+
+    markdown_html = markdown_to_html_node(markdown).to_html()
+    title = extract_title(markdown)
+
+    html_page = template.replace("{{ Title }}", title).replace(
+        "{{ Content }}", markdown_html
+    )
+
+    file = Path(dest_path)
+    file.parent.mkdir(parents=True, exist_ok=True)
+    with open(dest_path, "x") as f:
+        f.write(html_page)
+
+    print(f"✅ {dest_path} generated.")
 
 main()
