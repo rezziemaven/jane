@@ -1,7 +1,6 @@
 import os
 import shutil
 
-from textnode import TextNode, TextType
 from markdown_parser import markdown_to_html_node, extract_title
 from pathlib import Path
 
