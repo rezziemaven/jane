@@ -233,3 +233,17 @@ def strip_quote_marker(quote_item):
     if quote_item.startswith("> "):
         return quote_item.removeprefix("> ")
     return quote_item.removeprefix(">")
+
+
+def extract_title(markdown):
+    # convert markdown to blocks
+    blocks = markdown_to_blocks(markdown)
+    # check if a block starts with '# '
+    for block in blocks:
+        if block.startswith("# "):
+            # if it does, strip '# ' and return remaining text in block
+            title = block.removeprefix("# ")
+            return title
+
+        # if doesn't, raise exception.
+        raise Exception("No title found")
