@@ -1,7 +1,8 @@
 import re
 from enum import Enum
 
-from textnode import TextNode, TextType
+from textnode import TextNode, TextType, text_node_to_html_node
+from htmlnode import ParentNode
 
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
@@ -136,3 +137,99 @@ def block_to_block_type(markdown_block):
     ):
         return BlockType.ORDERED
     return BlockType.PARAGRAPH
+
+
+def markdown_to_html_node(markdown):
+    blocks = markdown_to_blocks(markdown)
+    children = []
+    for block in blocks:
+        block_type = block_to_block_type(block)
+        match block_type:
+            case BlockType.PARAGRAPH:
+                children.append(paragraph_to_html_node(block))
+            case BlockType.HEADING:
+                children.append(heading_to_html_node(block))
+            case BlockType.QUOTE:
+                children.append(quote_to_html_node(block))
+            case BlockType.UNORDERED:
+                children.append(list_to_html_node(block, BlockType.UNORDERED))
+            case BlockType.ORDERED:
+                children.append(list_to_html_node(block, BlockType.ORDERED))
+            case BlockType.CODE:
+                text = block.removeprefix("```\n").removesuffix("```")
+                text_node = TextNode(text, TextType.CODE)
+                code_node = text_node_to_html_node(text_node)
+                children.append(ParentNode("pre", [code_node]))
+    return ParentNode("div", children)
+
+
+def text_to_children(text):
+    text_nodes = text_to_textnodes(text)
+    html_nodes = []
+    for text_node in text_nodes:
+        html_nodes.append(text_node_to_html_node(text_node))
+    return html_nodes
+
+
+def list_to_html_node(list_block, block_type):
+    list_children = []
+    lines = list_block.split("\n")
+    for line in lines:
+        text = strip_list_marker(line, block_type)
+        line_children = text_to_children(text)
+        list_children.append(ParentNode("li", line_children))
+
+    if block_type == BlockType.ORDERED:
+        return ParentNode("ol", list_children)
+    return ParentNode("ul", list_children)
+
+
+def strip_list_marker(list_item, block_type):
+    if block_type == BlockType.ORDERED:
+        text = list_item.split(". ", 1)
+        return text[1]
+    return list_item.removeprefix("- ")
+
+
+def paragraph_to_html_node(paragraph_block):
+    lines = paragraph_block.split("\n")
+    text = " ".join(lines)
+    paragraph_children = text_to_children(text)
+    return ParentNode("p", paragraph_children)
+
+
+def get_heading_level(heading_block):
+    if heading_block.startswith("# "):
+        return "h1"
+    if heading_block.startswith("## "):
+        return "h2"
+    if heading_block.startswith("### "):
+        return "h3"
+    if heading_block.startswith("#### "):
+        return "h4"
+    if heading_block.startswith("##### "):
+        return "h5"
+    if heading_block.startswith("###### "):
+        return "h6"
+
+
+def heading_to_html_node(heading):
+    heading_level = get_heading_level(heading)
+    text = re.split("#{1,6} ", heading, maxsplit=1)
+    heading_children = text_to_children(text[1])
+    return ParentNode(heading_level, heading_children)
+
+
+def quote_to_html_node(quote_block):
+    lines = quote_block.split("\n")
+    for i in range(len(lines)):
+        lines[i] = strip_quote_marker(lines[i])
+    text = " ".join(lines)
+    quote_children = text_to_children(text)
+    return ParentNode("blockquote", quote_children)
+
+
+def strip_quote_marker(quote_item):
+    if quote_item.startswith("> "):
+        return quote_item.removeprefix("> ")
+    return quote_item.removeprefix(">")
