@@ -8,7 +8,7 @@ from pathlib import Path
 
 def main():
     basepath = argv[1] if len(argv) == 2 else "/"
-    dest_path = "./public"
+    dest_path = "./docs"
     template_path = "./template.html"
 
     copy_contents("./static", dest_path)
