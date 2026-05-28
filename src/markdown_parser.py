@@ -119,7 +119,6 @@ def block_to_block_type(markdown_block):
     if markdown_block.startswith(("# ", "## ", "### ", "#### ", "##### ", "###### ")):
         return BlockType.HEADING
     if markdown_block.startswith("```\n") and markdown_block.endswith("\n```"):
-        # TODO: Enhance this so it works for different coding languages eg. ```python, ```js. Probably would need a list. Use regex for this, would be less brittle
         return BlockType.CODE
 
     lines = markdown_block.split("\n")
