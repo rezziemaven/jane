@@ -1,8 +1,6 @@
 # Jane
 
-Beautifully simple static site generator
-
-This generator currently generates dummy Tolkien fan blog content. Feel free to replace and add your own content in the `content/` folder, `template.html`, and source CSS and images in the `static/` folder.
+Beautifully simple static site generator.
 
 Preview it here: [Jane Static Site Generator](https://rezziemaven.github.io/jane/)
 
@@ -12,7 +10,7 @@ Preview it here: [Jane Static Site Generator](https://rezziemaven.github.io/jane
 2. To test locally:
     1. Run the `main.sh` script to test locally. It should run successfully without errors.
     2. Visit [https://localhost:8888](https://localhost:8888) to view the dummy content in the `content` and `static` folders.
-3. To alter the generated content with your own:
+3. To alter the dummy generated content with your own:
     1. Replace the `content/` and `static/` folder content with your own content, and update the `static/index.css` and `template.html` if necessary.
     2. Re-run `main.sh` to preview the changes.
     3. Do ensure that the markdown in your `MD` files are formatted correctly, or this could result in an error.
