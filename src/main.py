@@ -10,6 +10,9 @@ def main():
     copy_contents("./static", "./public")
 
     template_path = "./template.html"
+    generate_pages("./content", template_path, "./public")
+
+
 def copy_contents(src, dst):
     # check that each path exists
     if not os.path.exists(src):
@@ -63,5 +66,26 @@ def generate_page(from_path, template_path, dest_path):
         f.write(html_page)
 
     print(f"✅ {dest_path} generated.")
+
+
+def generate_pages(src, template_path, dst):
+    if not os.path.exists(src):
+        raise Exception("❌ Source directory not found.")
+    if not os.path.exists(dst):
+        raise Exception("❌ Destination directory not found.")
+
+    items = os.listdir(src)
+
+    for item in items:
+        src_path = os.path.join(src, item)
+        if os.path.isfile(src_path):
+            html_item = item.removesuffix(".md") + ".html"
+            dest_path = os.path.join(dst, html_item)
+            generate_page(src_path, template_path, dest_path)
+        else:
+            dest_path = os.path.join(dst, item)
+            os.mkdir(dest_path)
+            generate_pages(src_path, template_path, dest_path)
+
 
 main()
