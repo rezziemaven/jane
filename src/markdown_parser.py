@@ -112,3 +112,27 @@ class BlockType(Enum):
     QUOTE = "quote"
     UNORDERED = "unordered_list"
     ORDERED = "ordered_list"
+
+
+def block_to_block_type(markdown_block):
+    if markdown_block.startswith(("# ", "## ", "### ", "#### ", "##### ", "###### ")):
+        return BlockType.HEADING
+    if markdown_block.startswith("```\n") and markdown_block.endswith("\n```"):
+        # TODO: Enhance this so it works for different coding languages eg. ```python, ```js. Probably would need a list. Use regex for this, would be less brittle
+        return BlockType.CODE
+
+    lines = markdown_block.split("\n")
+    if all(
+        (line.startswith((">", "> ")) and not line.startswith(" ", 2) for line in lines)
+    ):
+        return BlockType.QUOTE
+    if all((line.startswith("- ") and not line.startswith(" ", 2) for line in lines)):
+        return BlockType.UNORDERED
+    if all(
+        (
+            lines[i].startswith(f"{i+1}. ") and not lines[i].startswith(" ", 3)
+            for i in range(len(lines))
+        )
+    ):
+        return BlockType.ORDERED
+    return BlockType.PARAGRAPH
